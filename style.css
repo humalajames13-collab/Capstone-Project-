@@ -1,0 +1,16 @@
+body {
+    background-color: lightblue;
+    font-family: Arial;
+    text-align: center;
+}
+
+h1 {
+    color: rgb(0, 72, 139);
+}
+
+.game-box {
+    background-color: rgb(255, 255, 255);
+    margin: 20px;
+    padding: 20px;
+}
+
