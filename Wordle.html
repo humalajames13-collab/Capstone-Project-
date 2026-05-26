@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Bandit - Wordle Edition</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-blur blur1"></div>
+<div class="bg-blur blur2"></div>
+
+<div class="game-box wordle-box">
+  <h1>Wordle</h1>
+  <h2 id="score">Score: 0</h2>
+  <p class="game-desc">Guess the 5-letter word. 6 tries.</p>
+
+  <div class="wordle-grid" id="grid"></div>
+
+  <input type="text" id="hidden-input" maxlength="5" autocomplete="off">
+
+  <div class="keyboard" id="keyboard"></div>
+
+  <p id="result"></p>
+
+  <a href="home.html">
+    <button class="btn-secondary btn-margin">Back Home</button>
+  </a>
+</div>
+
+<script src="wordle.js"></script>
+</body>
+</html>

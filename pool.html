@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8-Ball Showdown</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-blur blur1"></div>
+<div class="bg-blur blur2"></div>
+
+<div class="game-box pool-box">
+  <h1>🎱 8-Ball Showdown</h1>
+  
+  <div class="menu-row">
+    <label>Mode:
+      <select id="game-mode">
+        <option value="bot">Play vs Bot</option>
+        <option value="friend">Pass & Play (Friend)</option>
+      </select>
+    </label>
+
+    <label id="difficulty-label">Bot Level:
+      <select id="bot-difficulty">
+        <option value="easy">Chump (Easy)</option>
+        <option value="medium" selected>Hustler (Medium)</option>
+        <option value="hard">Shark (Hard)</option>
+      </select>
+    </label>
+    
+    <button id="restart-btn" class="btn-small">Restart Game</button>
+  </div>
+
+  <div class="status-bar">
+    <div id="p1-display" class="player-badge active">Player 1: Undecided</div>
+    <div id="game-status">Game Start!</div>
+    <div id="p2-display" class="player-badge">Bot: Undecided</div>
+  </div>
+
+  <div id="table-container">
+    <canvas id="poolCanvas" width="800" height="400"></canvas>
+  </div>
+
+  <p class="controls-hint">🖱️ <strong>Aim:</strong> Move Mouse | ⚡ <strong>Power:</strong> Hold Left-Click & Drag Back | 🚀 <strong>Shoot:</strong> Release Click</p>
+
+  <a href="home.html">
+    <button class="btn-secondary btn-margin">Back Home</button>
+  </a>
+</div>
+
+<script src="pool.js"></script>
+</body>
+</html>

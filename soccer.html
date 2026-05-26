@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slime Soccer: Gravity Blast</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #soccerCanvas {
+        background: radial-gradient(circle at center, #14532d 0%, #022c22 100%);
+        display: block;
+        border-radius: 8px;
+    }
+    .blast-ready {
+        color: #22c55e !important;
+        text-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+    }
+    .blast-charging {
+        color: #ef4444 !important;
+        animation: pulse 0.5s infinite alternate;
+    }
+    @keyframes pulse {
+        from { opacity: 0.5; } to { opacity: 1; }
+    }
+    /* Expand table container style constraint for the larger field layout */
+    .soccer-container {
+        width: 1000px !important;
+        max-width: 100% !important;
+        aspect-ratio: 2 / 1 !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-blur blur1"></div>
+<div class="bg-blur blur2"></div>
+
+<div class="game-box pool-box">
+  <h1>⚽ Slime Soccer</h1>
+  
+  <div class="menu-row">
+    <label>Match Type:
+      <select id="game-mode">
+        <option value="bot">Vs Hard AI Bot</option>
+        <option value="friend">Pass & Play (Vs Friend)</option>
+      </select>
+    </label>
+    <button id="restart-btn" class="btn-small">Reset Pitch</button>
+  </div>
+
+  <div class="status-bar">
+    <div id="player-score" class="player-badge active">P1 (BLUE): 0</div>
+    <div id="game-status" class="blast-ready">MATCH KICKOFF!</div>
+    <div id="cpu-score" class="player-badge">P2 / BOT (ORANGE): 0</div>
+  </div>
+
+  <div id="table-container" class="soccer-container">
+    <canvas id="soccerCanvas" width="1000" height="500"></canvas>
+  </div>
+
+  <p class="controls-hint">
+    🔵 <strong>P1 (Left Slime):</strong> [A][D] Move | [W] Double-Jump | [SPACE] Gravity Blast <br>
+    🟠 <strong>P2 (Right Slime):</strong> [Left/Right Arrow] Move | [Up Arrow] Double-Jump | [Enter] Gravity Blast
+  </p>
+
+  <a href="home.html">
+    <button class="btn-secondary btn-margin">Back Home</button>
+  </a>
+</div>
+
+<script src="soccer.js"></script>
+</body>
+</html>
