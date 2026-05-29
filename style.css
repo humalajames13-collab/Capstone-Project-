@@ -1,17 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;700&display=swap');
 
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:'Poppins', sans-serif;
+    /* Uses a classic arcade pixel font for headings, falls back to clean sans-serif */
+    font-family: 'Poppins', sans-serif;
 }
 
 body{
     min-height:100vh;
-    background: linear-gradient(135deg, #000000, #0a0f1f, #111827);
-    color:#f8fafc;
+    background: radial-gradient(circle at center, #1b053a 0%, #070114 100%);
+    background-color: #070114;
+    color:#fff;
     overflow-x:hidden;
+    /* Retro scanline effect across the screen */
+    background-image: linear-gradient(rgba(18, 10, 36, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
+                      linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 4px, 6px 100%;
 }
 
 /* HEADER */
@@ -21,16 +27,19 @@ header{
 }
 
 header h1{
-    font-size:4rem;
-    font-weight:700;
-    color:#60a5fa;
-    margin-bottom:15px;
-    text-shadow: 0 0 20px rgba(96,165,250,0.45);
+    font-family: 'Press Start 2P', cursive;
+    font-size:3rem;
+    color:#ff007f; /* Hot Pink */
+    margin-bottom:20px;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0px #00ffff, -3px -3px 0px #ffff00; /* Chromatic aberration effect */
 }
 
 header p{
-    color:#cbd5e1;
-    font-size:1.2rem;
+    font-family: 'Press Start 2P', cursive;
+    color:#00ffff; /* Neon Cyan */
+    font-size:0.9rem;
+    letter-spacing: 1px;
 }
 
 /* CONTAINER / GRID SYSTEM */
@@ -46,60 +55,63 @@ header p{
 
 /* CARDS */
 .card{
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(96,165,250,0.15);
-    backdrop-filter:blur(12px);
-    border-radius:24px;
+    background: #120626;
+    border: 4px solid #00ffff;
+    border-radius: 0px; /* Sharp retro corners */
     padding:40px 30px;
     text-align:center;
-    transition:0.35s ease;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    transition: 0.2s steps(4); /* Chappy retro transition */
+    box-shadow: 8px 8px 0px #ff007f;
 }
 
 .card:hover{
-    transform: translateY(-10px);
-    border-color:#3b82f6;
-    box-shadow: 0 0 25px rgba(59,130,246,0.35);
+    transform: translate(-4px, -4px);
+    border-color:#ffff00; /* Turns neon yellow */
+    box-shadow: 12px 12px 0px #00ffff;
 }
 
 .card h2{
-    color:#60a5fa;
-    font-size:2rem;
-    margin-bottom:15px;
+    font-family: 'Press Start 2P', cursive;
+    color:#ffff00;
+    font-size:1.4rem;
+    margin-bottom:20px;
 }
 
 .card p{
-    color:#d1d5db;
+    color:#e0e0ff;
     line-height:1.7;
     margin-bottom:30px;
 }
 
 /* BUTTONS */
 button{
-    background: linear-gradient(to right, #2563eb, #3b82f6);
+    font-family: 'Press Start 2P', cursive;
+    background: #ff007f;
     color:white;
-    border:none;
+    border: 3px solid #fff;
     padding:14px 28px;
-    border-radius:12px;
-    font-size:1rem;
-    font-weight:600;
+    border-radius:0px;
+    font-size:0.8rem;
     cursor:pointer;
-    transition:0.3s ease;
-    box-shadow: 0 10px 20px rgba(37,99,235,0.3);
+    transition: 0.1s ease;
+    box-shadow: 5px 5px 0px #000;
+    text-transform: uppercase;
 }
 
 button:hover{
-    transform:scale(1.05);
-    box-shadow: 0 0 25px rgba(59,130,246,0.55);
+    transform: translate(-2px, -2px);
+    background: #00ffff;
+    color: #000;
+    box-shadow: 7px 7px 0px #ff007f;
 }
 
 .btn-secondary {
-    background: transparent; 
-    border: 1px solid rgba(255,255,255,0.3);
+    background: #ff007f !important; 
+    border: 3px solid #fff;
 }
 
 .btn-margin {
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 /* GAME BOX */
@@ -107,13 +119,12 @@ button:hover{
     width:90%;
     max-width:550px;
     margin:80px auto;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(96,165,250,0.15);
-    backdrop-filter:blur(12px);
-    border-radius:28px;
+    background: #120626;
+    border: 6px double #ff007f; /* Retro double line border */
+    border-radius: 0px;
     padding:50px 40px;
     text-align:center;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+    box-shadow: 12px 12px 0px #00ffff;
 }
 
 .wordle-box {
@@ -122,15 +133,16 @@ button:hover{
 }
 
 .game-box h1{
-    font-size:2.8rem;
-    margin-bottom:20px;
-    color:#60a5fa;
-    text-shadow: 0 0 15px rgba(96,165,250,0.4);
+    font-family: 'Press Start 2P', cursive;
+    font-size:2rem;
+    margin-bottom:25px;
+    color:#ffff00;
+    text-shadow: 4px 4px 0px #ff007f;
 }
 
 .game-box p{
-    color:#e2e8f0;
-    font-size:1.2rem;
+    color:#fff;
+    font-size:1.1rem;
     margin:20px 0;
 }
 
@@ -140,28 +152,30 @@ button:hover{
 
 /* INPUT */
 input{
+    font-family: 'Press Start 2P', cursive;
     width:100%;
     padding:15px;
     margin:20px 0;
-    border:none;
+    border: 3px solid #00ffff;
     outline:none;
-    border-radius:14px;
-    background: rgba(255,255,255,0.06);
-    color:white;
-    border: 1px solid rgba(96,165,250,0.12);
+    border-radius: 0px;
+    background: #070114;
+    color:#ffff00;
     text-align:center;
-    font-size:1rem;
+    font-size:0.9rem;
 }
 
 input::placeholder{
-    color:#94a3b8;
+    color:#554477;
 }
 
 /* RESULT */
 #result{
-    margin-top:20px;
-    font-size:1.1rem;
-    font-weight:600;
+    font-family: 'Press Start 2P', cursive;
+    margin-top:25px;
+    font-size:1rem;
+    color: #ffff00;
+    text-shadow: 2px 2px 0px #ff007f;
 }
 
 /* LINKS */
@@ -169,43 +183,45 @@ a{
     text-decoration:none;
 }
 
-/* GLOW BACKGROUND */
+/* GLOW BACKGROUND (Turned into Arcade Laser Grids/Glows) */
 .bg-blur{
     position:fixed;
-    width:300px;
-    height:300px;
+    width:400px;
+    height:400px;
     border-radius:50%;
-    filter:blur(120px);
+    filter:blur(150px);
     z-index:-1;
+    opacity: 0.4;
 }
 
 .blur1{
-    background:#2563eb;
-    top:-120px;
-    left:-120px;
+    background:#ff007f;
+    top:-150px;
+    left:-150px;
 }
 
 .blur2{
-    background:#1d4ed8;
-    bottom:-120px;
-    right:-120px;
+    background:#00ffff;
+    bottom:-150px;
+    right:-150px;
 }
 
 /* --- MEMORY MATRIX ADDITIONS --- */
 .grid {
     display: grid;
-    gap: 8px;
+    gap: 10px;
     margin: 25px auto;
-    transition: all 0.3s ease;
+    border: 3px solid #ff007f;
+    padding: 10px;
+    background: #000;
 }
 
 .tile {
     aspect-ratio: 1;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
+    background: #25123e;
+    border: 2px solid #3d2263;
+    border-radius: 0px;
     cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
 }
 
 .tile:active {
@@ -213,25 +229,28 @@ a{
 }
 
 .tile.active {
-    background: #3b82f6 !important;
-    box-shadow: 0 0 15px #3b82f6;
+    background: #ffff00 !important;
+    border-color: #fff;
+    box-shadow: 0 0 15px #ffff00;
 }
 
 .tile.correct {
-    background: #10b981 !important;
-    box-shadow: 0 0 10px #10b981;
+    background: #00ffcc !important;
+    border-color: #fff;
+    box-shadow: 0 0 15px #00ffcc;
 }
 
 .tile.wrong {
-    background: #ef4444 !important;
-    box-shadow: 0 0 10px #ef4444;
+    background: #ff0055 !important;
+    border-color: #fff;
+    box-shadow: 0 0 15px #ff0055;
 }
 
 /* --- PIXEL BANDIT (WORDLE) ADDITIONS --- */
 .wordle-grid {
     display: grid;
     grid-template-rows: repeat(6, 1fr);
-    gap: 5px;
+    gap: 8px;
     margin: 20px auto;
     max-width: 300px;
 }
@@ -239,36 +258,39 @@ a{
 .wordle-row {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
+    gap: 8px;
 }
 
 .wordle-tile {
     aspect-ratio: 1;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
+    border: 3px solid #3d2263;
+    border-radius: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
     text-transform: uppercase;
     color: #fff;
-    transition: background-color 0.3s, border-color 0.3s;
+    background: #000;
 }
 
 .tile-correct {
-    background-color: #6aaa64 !important;
-    border-color: #6aaa64 !important;
+    background-color: #00ffcc !important;
+    border-color: #fff !important;
+    color: #000 !important;
 }
 
 .tile-present {
-    background-color: #c9b458 !important;
-    border-color: #c9b458 !important;
+    background-color: #ffff00 !important;
+    border-color: #fff !important;
+    color: #000 !important;
 }
 
 .tile-absent {
-    background-color: #787c7e !important;
-    border-color: #787c7e !important;
+    background-color: #3d2263 !important;
+    border-color: #120626 !important;
+    color: #7755aa !important;
 }
 
 .keyboard {
@@ -281,30 +303,31 @@ a{
 .keyboard-row {
     display: flex;
     justify-content: center;
-    gap: 4px;
+    gap: 5px;
 }
 
 .key {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
+    background: #25123e;
+    border: 2px solid #ff007f;
+    border-radius: 0px;
     color: #fff;
-    padding: 12px 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    padding: 12px 6px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.6rem;
     cursor: pointer;
     user-select: none;
-    min-width: 28px;
+    min-width: 32px;
     text-transform: uppercase;
-    transition: background 0.1s;
 }
 
 .key.wide {
-    min-width: 45px;
+    min-width: 55px;
+    font-size: 0.5rem;
 }
 
 .key:active {
-    background: rgba(255, 255, 255, 0.25);
+    background: #00ffff;
+    color: #000;
 }
 
 #hidden-input {
@@ -316,7 +339,7 @@ a{
 /* RESPONSIVE DESIGN */
 @media(max-width:768px){
     header h1{
-        font-size:2.8rem;
+        font-size:2rem;
     }
     .card{
         padding:30px 20px;
@@ -325,6 +348,7 @@ a{
         padding:40px 25px;
     }
 }
+
 /* --- 8-BALL SHOWDOWN (POOL) ADDITIONS --- */
 .pool-box {
     max-width: 900px;
@@ -340,41 +364,43 @@ a{
 }
 
 .menu-row label {
-    font-weight: 500;
-    color: #60a5fa;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.75rem;
+    color: #00ffff;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 select {
-    background: rgba(255, 255, 255, 0.08);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    background: #25123e;
     color: white;
-    border: 1px solid rgba(96, 165, 250, 0.3);
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border: 2px solid #ff007f;
+    padding: 8px 12px;
+    border-radius: 0px;
     outline: none;
     cursor: pointer;
 }
 
 select option {
-    background: #0a0f1f;
+    background: #120626;
     color: white;
 }
 
 .btn-small {
-    padding: 6px 16px !important;
-    font-size: 0.9rem !important;
+    padding: 8px 14px !important;
+    font-size: 0.7rem !important;
 }
 
 #table-container {
     position: relative;
     margin: 20px auto;
-    background: #064e3b;
-    border: 16px solid #1e293b;
-    border-radius: 16px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.5);
+    background: #004422; /* Classic darker retro felt */
+    border: 12px solid #ff007f; /* Neon cabinet borders */
+    border-radius: 0px;
+    box-shadow: 0 0 20px #ff007f, inset 0 0 20px rgba(0,0,0,0.8);
     max-width: 100%;
     width: 800px;
     aspect-ratio: 2 / 1;
@@ -390,52 +416,56 @@ select option {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.03);
+    background: #000;
     padding: 12px 25px;
-    border-radius: 12px;
+    border-radius: 0px;
     margin-bottom: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 2px dashed #00ffff;
 }
 
 #game-status {
-    font-weight: 600;
-    color: #e2e8f0;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.75rem;
+    color: #fff;
 }
 
 .player-badge {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #94a3b8;
-    transition: all 0.3s ease;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.75rem;
+    color: #3d2263;
 }
 
 .player-badge.active {
-    color: #3b82f6;
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+    color: #ffff00;
+    text-shadow: 0 0 8px #ffff00;
 }
 
 .controls-hint {
-    font-size: 0.85rem !important;
-    color: #94a3b8 !important;
-    margin-top: 10px !important;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.55rem !important;
+    color: #00ffff !important;
+    margin-top: 15px !important;
 }
+
 /* --- LEADERBOARD STYLE SYSTEM --- */
 .leaderboard-box {
     margin-top: 25px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(96, 165, 250, 0.1);
-    border-radius: 16px;
+    background: #000;
+    border: 3px solid #ffff00;
+    border-radius: 0px;
     padding: 20px;
     text-align: left;
+    box-shadow: 5px 5px 0px #ff007f;
 }
 
 .leaderboard-box h3 {
-    color: #60a5fa;
-    font-size: 1.3rem;
-    margin-bottom: 12px;
+    font-family: 'Press Start 2P', cursive;
+    color: #00ffff;
+    font-size: 1rem;
+    margin-bottom: 15px;
     text-align: center;
-    border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-    padding-bottom: 8px;
+    border-bottom: 2px dashed #ff007f;
+    padding-bottom: 12px;
 }
 
 .leaderboard-list {
@@ -444,22 +474,47 @@ select option {
 }
 
 .leaderboard-item {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
     display: flex;
     justify-content: space-between;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    color: #cbd5e1;
+    padding: 10px 10px;
+    color: #fff;
 }
 
 .leaderboard-item:nth-child(even) {
-    background: rgba(255, 255, 255, 0.03);
+    background: #120626;
 }
 
 .leaderboard-item strong {
-    color: #f8fafc;
+    color: #ffff00;
 }
 
-.rank-1 { color: #eab308 !important; font-weight: bold; } /* Gold */
-.rank-2 { color: #cbd5e1 !important; font-weight: bold; } /* Silver */
-.rank-3 { color: #cd7f32 !important; font-weight: bold; } /* Bronze */
+/* Classic retro High-Score Podiums */
+.rank-1 { color: #ff007f !important; text-shadow: 1px 1px 0 #fff; } 
+.rank-2 { color: #00ffff !important; } 
+.rank-3 { color: #ffff00 !important; }
+
+#table-container {
+    /* Change this line in your CSS if the pool physics/aiming broke */
+    border: none; 
+    outline: 12px solid #ff007f; /* Outline sits outside the layout box */
+}
+.game-box { border: 6px double #ff007f; }
+/* UPDATE THIS IN style.css */
+.game-box {
+    width: 90%;
+    max-width: 550px;
+    margin: 80px auto;
+    background: #120626;
+    
+    /* Remove the standard border that offsets bounding box calculations */
+    border: none; 
+    /* Use an outline instead - maintains identical visual retro double border */
+    outline: 6px double #ff007f; 
+    
+    border-radius: 0px;
+    padding: 50px 40px;
+    text-align: center;
+    box-shadow: 12px 12px 0px #00ffff;
+}
