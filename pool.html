@@ -12,7 +12,7 @@
 <div class="bg-blur blur2"></div>
 
 <div class="game-box pool-box">
-  <h1>🎱 8-Ball Showdown</h1>
+  <h1> 8-Ball</h1>
   
   <div class="menu-row">
     <label>Mode:
@@ -24,9 +24,9 @@
 
     <label id="difficulty-label">Bot Level:
       <select id="bot-difficulty">
-        <option value="easy">Chump (Easy)</option>
-        <option value="medium" selected>Hustler (Medium)</option>
-        <option value="hard">Shark (Hard)</option>
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
       </select>
     </label>
     
@@ -34,21 +34,25 @@
   </div>
 
   <div class="status-bar">
-    <div id="p1-display" class="player-badge active">Player 1: Undecided</div>
-    <div id="game-status">Game Start!</div>
-    <div id="p2-display" class="player-badge">Bot: Undecided</div>
+    <div id="p1-display" class="player-badge active">👤 Player 1: Undecided</div>
+    <div id="game-status">Game Start! Hit the Cue Ball.</div>
+    <div id="p2-display" class="player-badge">🏠 Bot: Undecided</div>
   </div>
 
   <div id="table-container">
     <canvas id="poolCanvas" width="800" height="400"></canvas>
   </div>
 
-  <p class="controls-hint">🖱️ <strong>Aim:</strong> Move Mouse | ⚡ <strong>Power:</strong> Hold Left-Click & Drag Back | 🚀 <strong>Shoot:</strong> Release Click</p>
+  <p class="controls-hint">🖱️ <strong>Aim & Shoot:</strong> Click anywhere, drag back (even off screen) to load power, release to fire!</p>
 
   <a href="home.html">
     <button class="btn-secondary btn-margin">Back Home</button>
   </a>
 </div>
+<div class="leaderboard-box">
+    <h3>🏆 Fewest Shots to Win (vs Bot)</h3>
+    <ul id="leaderboard-list" class="leaderboard-list"></ul>
+  </div>
 
 <script src="pool.js"></script>
 </body>

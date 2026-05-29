@@ -20,7 +20,7 @@ const keyboardRows = [
 // Fetch thousands of 5-letter words from a public English word repository
 async function loadDictionaryAndStart() {
     try {
-        resultDisplay.innerHTML = " Loading dictionary...";
+        resultDisplay.innerHTML = "⏳ Loading dictionary...";
         const response = await fetch("https://raw.githubusercontent.com/charlesreid1/five-letter-words/master/sgb-words.txt");
         if (!response.ok) throw new Error("Network issue");
         
@@ -196,9 +196,17 @@ function submitGuess() {
         score += 15;
         document.getElementById("score").innerText = `Score: ${score}`;
         resultDisplay.innerHTML = "🔥 Bandit Beaten! +15 Score";
+        
+        // Save leaderboard data on victory
+        checkAndSaveScore(score);
         setTimeout(initGame, 2000);
+
     } else if (guesses.length === maxTries) {
         gameOver = true;
+        
+        // Save leaderboard data before points get dropped
+        checkAndSaveScore(score);
+
         score = Math.max(0, score - 5);
         document.getElementById("score").innerText = `Score: ${score}`;
         resultDisplay.innerHTML = `❌ Busted! Word was: <strong>${secretWord}</strong>`;
@@ -206,4 +214,41 @@ function submitGuess() {
     }
 }
 
+function updateLeaderboardUI() {
+    const list = document.getElementById("leaderboard-list");
+    if (!list) return;
+    const scores = JSON.parse(localStorage.getItem("wordle_leaderboard")) || [];
+    list.innerHTML = scores.length === 0 ? "<li class='leaderboard-item' style='justify-content:center;'>No highscores yet!</li>" : "";
+    
+    scores.forEach((entry, idx) => {
+        const li = document.createElement("li");
+        li.className = "leaderboard-item";
+        let rankClass = idx === 0 ? "rank-1" : idx === 1 ? "rank-2" : idx === 2 ? "rank-3" : "";
+        li.innerHTML = `<span class="${rankClass}">${idx + 1}. ${entry.name}</span> <strong>${entry.score} pts</strong>`;
+        list.appendChild(li);
+    });
+}
+
+function checkAndSaveScore(finalScore) {
+    if (finalScore <= 0) return; // Don't track 0 score runs
+    let scores = JSON.parse(localStorage.getItem("wordle_leaderboard")) || [];
+    const minScore = scores.length < 5 ? 0 : scores[scores.length - 1].score;
+    
+    if (finalScore > minScore || scores.length < 5) {
+        setTimeout(() => {
+            const name = prompt(`🔥 New Wordle High Score: ${finalScore}! Enter your name:`);
+            if (name) {
+                const cleanedName = name.trim().slice(0, 10) || "Anonymous";
+                scores.push({ name: cleanedName, score: finalScore });
+                scores.sort((a, b) => b.score - a.score);
+                scores = scores.slice(0, 5);
+                localStorage.setItem("wordle_leaderboard", JSON.stringify(scores));
+                updateLeaderboardUI();
+            }
+        }, 500);
+    }
+}
+
+// Start dictionary tracking and load UI lists
 loadDictionaryAndStart();
+updateLeaderboardUI();

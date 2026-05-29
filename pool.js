@@ -1,10 +1,11 @@
 const canvas = document.getElementById("poolCanvas");
 const ctx = canvas.getContext("2d");
 
-// Physics & Engine Scaling Constants
-const BALL_RADIUS = 10;
-const POCKET_RADIUS = 22;
-const FRICTION = 0.985;
+// Physics & Tuning Constants
+const BALL_RADIUS = 12;
+const POCKET_RADIUS = 24;
+const FRICTION = 0.988; 
+const ELASTICITY = 0.99; 
 
 let gameMode = "bot"; 
 let botDifficulty = "medium"; 
@@ -12,12 +13,37 @@ let currentPlayer = 1;
 let playerAssignments = { 1: null, 2: null }; 
 let balls = [];
 let pockets = [];
-let cueStick = { angle: 0, power: 0, maxPower: 30, isDragging: false };
 let isMoving = false;
 let gameOver = false;
 let turnFoulOccurred = false;
 let firstBallHitThisTurn = null;
 let ballsPocketedThisTurn = [];
+
+// Boundless Dragging State
+let cueStick = { 
+    angle: 0, 
+    power: 0, 
+    maxPower: 45, 
+    isDragging: false,
+    dragStartX: 0,
+    dragStartY: 0
+};
+
+// Particle Engine Effects
+let particles = [];
+function spawnPocketParticles(x, y, color) {
+    for (let i = 0; i < 12; i++) {
+        particles.push({
+            x: x, y: y,
+            vx: (Math.random() - 0.5) * 6,
+            vy: (Math.random() - 0.5) * 6,
+            radius: Math.random() * 3 + 2,
+            color: color,
+            alpha: 1,
+            decay: Math.random() * 0.03 + 0.02
+        });
+    }
+}
 
 // DOM Bindings
 const modeSelect = document.getElementById("game-mode");
@@ -47,73 +73,81 @@ class Ball {
         this.vx *= FRICTION;
         this.vy *= FRICTION;
 
-        if (Math.abs(this.vx) < 0.05) this.vx = 0;
-        if (Math.abs(this.vy) < 0.05) this.vy = 0;
+        if (Math.abs(this.vx) < 0.04) this.vx = 0;
+        if (Math.abs(this.vy) < 0.04) this.vy = 0;
 
-        // Boundary Cushion Collisions
-        if (this.x < BALL_RADIUS) { this.x = BALL_RADIUS; this.vx *= -1; }
-        if (this.x > canvas.width - BALL_RADIUS) { this.x = canvas.width - BALL_RADIUS; this.vx *= -1; }
-        if (this.y < BALL_RADIUS) { this.y = BALL_RADIUS; this.vy *= -1; }
-        if (this.y > canvas.height - BALL_RADIUS) { this.y = canvas.height - BALL_RADIUS; this.vy *= -1; }
+        // Cushion Physics
+        if (this.x < BALL_RADIUS) { this.x = BALL_RADIUS; this.vx *= -ELASTICITY; }
+        if (this.x > canvas.width - BALL_RADIUS) { this.x = canvas.width - BALL_RADIUS; this.vx *= -ELASTICITY; }
+        if (this.y < BALL_RADIUS) { this.y = BALL_RADIUS; this.vy *= -ELASTICITY; }
+        if (this.y > canvas.height - BALL_RADIUS) { this.y = canvas.height - BALL_RADIUS; this.vy *= -ELASTICITY; }
     }
 
     draw() {
         if (this.isPocketed) return;
 
-        // Ball Shadow Drop
+        // Ball Shadow
         ctx.beginPath();
-        ctx.arc(this.x + 2, this.y + 2, BALL_RADIUS, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.arc(this.x + 3, this.y + 4, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
         ctx.fill();
 
-        // Solid Base Render
+        // Base Layer
         ctx.beginPath();
         ctx.arc(this.x, this.y, BALL_RADIUS, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
 
-        // Striped Layer Decal
+        // Striped Pattern Skinning
         if (this.isStriped) {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, BALL_RADIUS, -Math.PI/4, Math.PI/4);
-            ctx.lineTo(this.x - Math.cos(Math.PI/4)*BALL_RADIUS, this.y + Math.sin(Math.PI/4)*BALL_RADIUS);
-            ctx.arc(this.x, this.y, BALL_RADIUS, 3*Math.PI/4, 5*Math.PI/4);
-            ctx.fillStyle = "#ffffff";
-            ctx.fill();
-            
+            ctx.save();
             ctx.beginPath();
             ctx.arc(this.x, this.y, BALL_RADIUS, 0, Math.PI * 2);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(0,0,0,0.15)";
-            ctx.stroke();
+            ctx.clip();
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(this.x - BALL_RADIUS, this.y - BALL_RADIUS * 0.45, BALL_RADIUS * 2, BALL_RADIUS * 0.9);
+            ctx.restore();
         }
 
         // Inner Number Plate
         if (this.number !== 0) {
             ctx.beginPath();
-            ctx.arc(this.x, this.y, BALL_RADIUS * 0.5, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, BALL_RADIUS * 0.45, 0, Math.PI * 2);
             ctx.fillStyle = "#ffffff";
             ctx.fill();
 
-            ctx.fillStyle = "#000000";
-            ctx.font = "bold 8px Poppins";
+            ctx.fillStyle = "#1e293b";
+            ctx.font = `bold ${BALL_RADIUS * 0.7}px Arial`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText(this.number, this.x, this.y + 0.5);
-        } else {
-            // Shiny highlight accent on Cue Ball
-            ctx.beginPath();
-            ctx.arc(this.x - 3, this.y - 3, 2, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(255,255,255,0.8)";
-            ctx.fill();
         }
+
+        // 3D Spherical Lighting Map Overlay
+        let gradient = ctx.createRadialGradient(
+            this.x - BALL_RADIUS * 0.3, this.y - BALL_RADIUS * 0.3, 1,
+            this.x, this.y, BALL_RADIUS
+        );
+        gradient.addColorStop(0, "rgba(255, 255, 255, 0.4)");
+        gradient.addColorStop(0.2, "rgba(255, 255, 255, 0.1)");
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0.4)");
+        
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
     }
 }
 
 function initPockets() {
+    const offset = 4;
     pockets = [
-        { x: 0, y: 0 }, { x: canvas.width / 2, y: -2 }, { x: canvas.width, y: 0 },
-        { x: 0, y: canvas.height }, { x: canvas.width / 2, y: canvas.height + 2 }, { x: canvas.width, y: canvas.height }
+        { x: offset, y: offset }, 
+        { x: canvas.width / 2, y: 0 }, 
+        { x: canvas.width - offset, y: offset },
+        { x: offset, y: canvas.height - offset }, 
+        { x: canvas.width / 2, y: canvas.height }, 
+        { x: canvas.width - offset, y: canvas.height - offset }
     ];
 }
 
@@ -123,27 +157,25 @@ function initBalls() {
     currentPlayer = 1;
     playerAssignments = { 1: null, 2: null };
     
-    // Cue Ball Index [0]
-    balls.push(new Ball(canvas.width * 0.25, canvas.height / 2, 0, "#ffffff"));
+    // Cue Ball
+    balls.push(new Ball(canvas.width * 0.25, canvas.height / 2, 0, "#f8fafc"));
 
+    // Pro Triangle Setup Layout
     const ballConfig = [
-        { num: 1, col: "#fbbf24", str: false },  { num: 9, col: "#fbbf24", str: true },
-        { num: 7, col: "#b91c1c", str: false },  { num: 8, col: "#111827", str: false },
-        { num: 14, col: "#1d4ed8", str: true },  { num: 2, col: "#1d4ed8", str: false },
-        { num: 10, col: "#10b981", str: true },  { num: 15, col: "#b91c1c", str: true },
-        { num: 3, col: "#ef4444", str: false },  { num: 11, col: "#f97316", str: true },
-        { num: 4, col: "#7c3aed", str: false },  { num: 12, col: "#7c3aed", str: true },
-        { num: 5, col: "#f97316", str: false },  { num: 13, col: "#10b981", str: false },
-        { num: 6, col: "#047857", str: false }
+        { num: 1, col: "#eab308", str: false },
+        { num: 9, col: "#eab308", str: true },  { num: 7, col: "#dc2626", str: false },
+        { num: 14, col: "#2563eb", str: true }, { num: 8, col: "#0f172a", str: false }, { num: 2, col: "#2563eb", str: false },
+        { num: 10, col: "#10b981", str: true }, { num: 15, col: "#dc2626", str: true },  { num: 3, col: "#ef4444", str: false }, { num: 11, col: "#f97316", str: true },
+        { num: 4, col: "#8b5cf6", str: false }, { num: 12, col: "#8b5cf6", str: true },  { num: 5, col: "#f97316", str: false }, { num: 13, col: "#10b981", str: false }, { num: 6, col: "#059669", str: false }
     ];
 
     let configIndex = 0;
-    const startX = canvas.width * 0.7;
+    const startX = canvas.width * 0.68;
     const startY = canvas.height / 2;
-    const rowGap = BALL_RADIUS * 1.75;
+    const spacingX = BALL_RADIUS * 1.732; 
 
     for (let r = 0; r < 5; r++) {
-        let x = startX + r * rowGap;
+        let x = startX + r * spacingX;
         let yStart = startY - (r * BALL_RADIUS);
         for (let c = 0; c <= r; c++) {
             let y = yStart + c * (BALL_RADIUS * 2);
@@ -160,19 +192,18 @@ function updateUI() {
         return playerAssignments[pNum] === "solids" ? "🔴 Solids" : "🟡 Stripes";
     };
 
-    const p2Label = gameMode === "bot" ? "Bot" : "Player 2";
-    p1Display.innerText = `Player 1: ${getAssignText(1)}`;
+    const p2Label = gameMode === "bot" ? "🏠 Bot" : "👥 Player 2";
+    p1Display.innerText = `👤 Player 1: ${getAssignText(1)}`;
     p2Display.innerText = `${p2Label}: ${getAssignText(2)}`;
 
     p1Display.classList.toggle("active", currentPlayer === 1);
     p2Display.classList.toggle("active", currentPlayer === 2);
 
     if (gameOver) return;
-    statusDisplay.innerText = `Turn: ${currentPlayer === 1 ? "Player 1" : (gameMode === "bot" ? "Bot (AI)" : "Player 2")}`;
+    statusDisplay.innerHTML = `Current Strike: <strong>${currentPlayer === 1 ? "Player 1" : (gameMode === "bot" ? "The Bot" : "Player 2")}</strong>`;
 }
 
 function checkCollisions() {
-    // Ball-to-Ball Elastic Impact Physics
     for (let i = 0; i < balls.length; i++) {
         for (let j = i + 1; j < balls.length; j++) {
             let b1 = balls[i];
@@ -201,24 +232,23 @@ function checkCollisions() {
                 let p = nx * kx + ny * ky;
 
                 if (p > 0) {
-                    b1.vx -= nx * p;
-                    b1.vy -= ny * p;
-                    b2.vx += nx * p;
-                    b2.vy += ny * p;
+                    b1.vx -= nx * p * ELASTICITY;
+                    b1.vy -= ny * p * ELASTICITY;
+                    b2.vx += nx * p * ELASTICITY;
+                    b2.vy += ny * p * ELASTICITY;
                 }
             }
         }
     }
 
-    // Checking Pocket Triggers
     balls.forEach(ball => {
         if (ball.isPocketed) return;
         pockets.forEach(pocket => {
-            if (Math.hypot(ball.x - pocket.x, ball.y - pocket.y) < POCKET_RADIUS) {
+            if (Math.hypot(ball.x - pocket.x, ball.y - pocket.y) < POCKET_RADIUS * 0.9) {
                 ball.isPocketed = true;
-                ball.vx = 0;
-                ball.vy = 0;
+                ball.vx = 0; ball.vy = 0;
                 ballsPocketedThisTurn.push(ball);
+                spawnPocketParticles(ball.x, ball.y, ball.color);
             }
         });
     });
@@ -232,17 +262,15 @@ function evaluateTurnRules() {
         cueBall.isPocketed = false;
         cueBall.x = canvas.width * 0.25;
         cueBall.y = canvas.height / 2;
-        cueBall.vx = 0;
-        cueBall.vy = 0;
+        cueBall.vx = 0; cueBall.vy = 0;
         turnFoulOccurred = true;
-        statusDisplay.innerHTML = "⚠️ Cue Ball Scratched! Foul Called.";
+        statusDisplay.innerHTML = "💥 <strong>Scratch!</strong> Ball returned to kitchen.";
     }
 
     let targetType = playerAssignments[currentPlayer];
     let opponentPlayer = currentPlayer === 1 ? 2 : 1;
     let switchTurn = true;
 
-    // Check if the 8-Ball was sunk
     let eightBall = balls.find(b => b.number === 8);
     if (eightBall.isPocketed) {
         gameOver = true;
@@ -250,21 +278,22 @@ function evaluateTurnRules() {
             (targetType === "solids" ? !b.isStriped : b.isStriped));
 
         if (remainingTargets.length === 0 && !cueScratched) {
-            statusDisplay.innerHTML = `🎉 Player ${currentPlayer} Wins the match!`;
+            statusDisplay.innerHTML = `🏆 🎉 <strong>Player ${currentPlayer} Wins!</strong>`;
         } else {
-            statusDisplay.innerHTML = `❌ Player ${currentPlayer} Lose! Sunk 8-ball early or fouled. Player ${opponentPlayer} wins!`;
+            statusDisplay.innerHTML = `❌ <strong>Game Over!</strong> Illegal 8-ball pocket. Player ${opponentPlayer} wins!`;
         }
         return;
     }
 
-    // Rule Verification Processing
     if (!turnFoulOccurred && firstBallHitThisTurn) {
         if (targetType && ((targetType === "solids" && firstBallHitThisTurn.isStriped) || 
                            (targetType === "stripes" && !firstBallHitThisTurn.isStriped && firstBallHitThisTurn.number !== 8))) {
             turnFoulOccurred = true;
+            statusDisplay.innerHTML = "⚠️ <strong>Foul!</strong> Hit opponent ball group first.";
         }
     } else if (!firstBallHitThisTurn && !cueScratched) {
         turnFoulOccurred = true; 
+        statusDisplay.innerHTML = "⚠️ <strong>Foul!</strong> Completely missed target array.";
     }
 
     let legalBallsPocketed = ballsPocketedThisTurn.filter(b => b.number !== 0 && b.number !== 8);
@@ -292,11 +321,10 @@ function evaluateTurnRules() {
     updateUI();
 
     if (gameMode === "bot" && currentPlayer === 2 && !gameOver) {
-        setTimeout(executeBotTurn, 1000);
+        setTimeout(executeBotTurn, 1400);
     }
 }
 
-// Bot Angle Calculation Routine Engine
 function executeBotTurn() {
     if (gameOver) return;
     let cueBall = balls[0];
@@ -306,14 +334,11 @@ function executeBotTurn() {
         (!targetType || (targetType === "solids" ? !b.isStriped : b.isStriped))
     );
 
-    if (legalTargets.length === 0) {
-        legalTargets.push(balls.find(b => b.number === 8));
-    }
+    if (legalTargets.length === 0) legalTargets.push(balls.find(b => b.number === 8));
 
     let chosenTarget = legalTargets[Math.floor(Math.random() * legalTargets.length)];
     let targetPocket = pockets[Math.floor(Math.random() * pockets.length)];
 
-    // Path targeting optimization checks for Medium and Hard tiers
     if (botDifficulty !== "easy" && chosenTarget) {
         let bestTarget = chosenTarget;
         let minDistance = Infinity;
@@ -333,50 +358,58 @@ function executeBotTurn() {
 
     let angleToTarget = Math.atan2(chosenTarget.y - cueBall.y, chosenTarget.x - cueBall.x);
     
-    // Inaccuracy margin deviations based on selected bot difficulty
-    let errorRange = botDifficulty === "easy" ? 0.25 : botDifficulty === "medium" ? 0.08 : 0.015;
+    // Dynamic difficulty tuning based on selection value paths
+    let errorRange = botDifficulty === "easy" ? 0.22 : botDifficulty === "medium" ? 0.07 : 0.01;
     let finalAngle = angleToTarget + (Math.random() * errorRange - errorRange / 2);
-    let chosenPower = botDifficulty === "easy" ? 12 : 18;
+    let chosenPower = botDifficulty === "easy" ? 14 : botDifficulty === "medium" ? 22 : 28;
     
     cueBall.vx = Math.cos(finalAngle) * chosenPower;
     cueBall.vy = Math.sin(finalAngle) * chosenPower;
     isMoving = true;
 }
 
-// Input and Coordinate Scale Normalizations
-let canvasBounds = canvas.getBoundingClientRect();
-window.addEventListener("resize", () => { canvasBounds = canvas.getBoundingClientRect(); });
+// Unlimited Screen Boundaries Pointer Logic
+function handlePointerMove(clientX, clientY) {
+    if (isMoving || gameOver || (gameMode === "bot" && currentPlayer === 2)) return;
+    
+    let cueBall = balls[0];
+    let rect = canvas.getBoundingClientRect();
+    
+    let currentX = ((clientX - rect.left) / rect.width) * canvas.width;
+    let currentY = ((clientY - rect.top) / rect.height) * canvas.height;
 
-function getMousePos(e) {
-    return {
-        x: ((e.clientX - canvasBounds.left) / canvasBounds.width) * canvas.width,
-        y: ((e.clientY - canvasBounds.top) / canvasBounds.height) * canvas.height
-    };
+    if (!cueStick.isDragging) {
+        cueStick.angle = Math.atan2(currentY - cueBall.y, currentX - cueBall.x);
+    } else {
+        let dx = clientX - cueStick.dragStartX;
+        let dy = clientY - cueStick.dragStartY;
+        let pullDistance = Math.hypot(dx, dy);
+        
+        cueStick.power = Math.min(cueStick.maxPower, Math.max(0, pullDistance / 7));
+        let dragAngle = Math.atan2(dy, dx);
+        cueStick.angle = dragAngle + Math.PI; 
+    }
 }
 
-canvas.addEventListener("mousemove", (e) => {
-    if (isMoving || gameOver || (gameMode === "bot" && currentPlayer === 2)) return;
-    let mouse = getMousePos(e);
-    let cueBall = balls[0];
-    
-    cueStick.angle = Math.atan2(mouse.y - cueBall.y, mouse.x - cueBall.x);
-    
-    if (cueStick.isDragging) {
-        let dist = Math.hypot(mouse.x - cueBall.x, mouse.y - cueBall.y);
-        cueStick.power = Math.min(cueStick.maxPower, Math.max(0, dist / 10));
-    }
+window.addEventListener("mousemove", (e) => {
+    handlePointerMove(e.clientX, e.clientY);
 });
 
 canvas.addEventListener("mousedown", (e) => {
     if (isMoving || gameOver || (gameMode === "bot" && currentPlayer === 2)) return;
-    if (e.button === 0) cueStick.isDragging = true;
+    if (e.button === 0) {
+        cueStick.isDragging = true;
+        cueStick.dragStartX = e.clientX;
+        cueStick.dragStartY = e.clientY;
+        cueStick.power = 0;
+    }
 });
 
-canvas.addEventListener("mouseup", (e) => {
+window.addEventListener("mouseup", (e) => {
     if (!cueStick.isDragging) return;
     cueStick.isDragging = false;
 
-    if (cueStick.power > 1) {
+    if (cueStick.power > 1.5) {
         let cueBall = balls[0];
         cueBall.vx = -Math.cos(cueStick.angle) * cueStick.power;
         cueBall.vy = -Math.sin(cueStick.angle) * cueStick.power;
@@ -385,17 +418,24 @@ canvas.addEventListener("mouseup", (e) => {
     cueStick.power = 0;
 });
 
-// Canvas Context Loop Tick
 function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Canvas Backdrop
+    ctx.fillStyle = "#0f766e"; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Canvas Rails
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = "#115e59";
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+    // Canvas Pockets
     pockets.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, POCKET_RADIUS, 0, Math.PI * 2);
         ctx.fillStyle = "#022c22";
         ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#042f2e";
         ctx.stroke();
     });
 
@@ -413,32 +453,57 @@ function gameLoop() {
     }
     isMoving = currentlyMoving;
 
+    // Draw Elements
     balls.forEach(ball => ball.draw());
 
-    // Draw Aiming Guide Overlays
+    // Particles Render Loop Updates
+    particles.forEach((p, index) => {
+        p.x += p.vx; p.y += p.vy;
+        p.alpha -= p.decay;
+        if (p.alpha <= 0) {
+            particles.splice(index, 1);
+        } else {
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+            ctx.restore();
+        }
+    });
+
+    // Cue Stick Overlays Rendering
     if (!isMoving && !gameOver && !(gameMode === "bot" && currentPlayer === 2)) {
         let cueBall = balls[0];
         
         ctx.beginPath();
         ctx.moveTo(cueBall.x, cueBall.y);
-        ctx.lineTo(cueBall.x - Math.cos(cueStick.angle) * 120, cueBall.y - Math.sin(cueStick.angle) * 120);
-        ctx.strokeStyle = "rgba(255,255,255,0.18)";
-        ctx.setLineDash([4, 4]);
-        ctx.lineWidth = 1.5;
+        ctx.lineTo(cueBall.x - Math.cos(cueStick.angle) * 260, cueBall.y - Math.sin(cueStick.angle) * 260);
+        ctx.strokeStyle = cueStick.isDragging ? "rgba(255, 255, 255, 0.35)" : "rgba(255, 255, 255, 0.15)";
+        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 2;
         ctx.stroke();
         ctx.setLineDash([]); 
 
-        let distanceMultiplier = 15 + cueStick.power * 2;
-        let stickStartX = cueBall.x + Math.cos(cueStick.angle) * distanceMultiplier;
-        let stickStartY = cueBall.y + Math.sin(cueStick.angle) * distanceMultiplier;
-        let stickEndX = cueBall.x + Math.cos(cueStick.angle) * (distanceMultiplier + 160);
-        let stickEndY = cueBall.y + Math.sin(cueStick.angle) * (distanceMultiplier + 160);
+        let gapOffset = 14 + cueStick.power * 1.5;
+        let stickStartX = cueBall.x + Math.cos(cueStick.angle) * gapOffset;
+        let stickStartY = cueBall.y + Math.sin(cueStick.angle) * gapOffset;
+        let stickEndX = cueBall.x + Math.cos(cueStick.angle) * (gapOffset + 180);
+        let stickEndY = cueBall.y + Math.sin(cueStick.angle) * (gapOffset + 180);
 
         ctx.beginPath();
         ctx.moveTo(stickStartX, stickStartY);
         ctx.lineTo(stickEndX, stickEndY);
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = `rgb(${210 - cueStick.power * 4}, 140, 80)`;
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = `rgb(${220 - cueStick.power * 3}, 155, 95)`;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(stickStartX, stickStartY);
+        ctx.lineTo(cueBall.x + Math.cos(cueStick.angle) * (gapOffset + 10), cueBall.y + Math.sin(cueStick.angle) * (gapOffset + 10));
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "#f8fafc";
         ctx.stroke();
     }
 
@@ -458,10 +523,85 @@ difficultySelect.addEventListener("change", (e) => {
 restartBtn.addEventListener("click", initGameSetup);
 
 function initGameSetup() {
-    canvasBounds = canvas.getBoundingClientRect();
     initPockets();
     initBalls();
 }
 
 initGameSetup();
 gameLoop();
+let totalShotsTaken = 0; // Add near your line 13 variable blocks
+
+window.addEventListener("mouseup", (e) => {
+    if (!cueStick.isDragging) return;
+    cueStick.isDragging = false;
+
+    if (cueStick.power > 1.5) {
+        let cueBall = balls[0];
+        cueBall.vx = -Math.cos(cueStick.angle) * cueStick.power;
+        cueBall.vy = -Math.sin(cueStick.angle) * cueStick.power;
+        isMoving = true;
+        
+        // Increment user shots tracker if player 1 fires
+        if (currentPlayer === 1) {
+            totalShotsTaken++;
+        }
+    }
+    cueStick.power = 0;
+});
+
+function updateLeaderboardUI() {
+    const list = document.getElementById("leaderboard-list");
+    if (!list) return;
+    const scores = JSON.parse(localStorage.getItem("pool_leaderboard")) || [];
+    list.innerHTML = scores.length === 0 ? "<li class='leaderboard-item' style='justify-content:center;'>No records yet!</li>" : "";
+    
+    scores.forEach((entry, idx) => {
+        const li = document.createElement("li");
+        li.className = "leaderboard-item";
+        let rankClass = idx === 0 ? "rank-1" : idx === 1 ? "rank-2" : idx === 2 ? "rank-3" : "";
+        li.innerHTML = `<span class="${rankClass}">${idx + 1}. ${entry.name}</span> <strong>${entry.score} Shots</strong>`;
+        list.appendChild(li);
+    });
+}
+
+function checkAndSavePoolScore(finalShots) {
+    // Only track solo victories against AI bots
+    if (gameMode !== "bot") return; 
+    let scores = JSON.parse(localStorage.getItem("pool_leaderboard")) || [];
+    const maxShots = scores.length < 5 ? Infinity : scores[scores.length - 1].score;
+    
+    if (finalShots < maxShots || scores.length < 5) {
+        setTimeout(() => {
+            const name = prompt(`🏆 Class Champion! You beat the bot in only ${finalShots} shots! Enter your name:`);
+            if (name) {
+                const cleanedName = name.trim().slice(0, 10) || "Anonymous";
+                scores.push({ name: cleanedName, score: finalShots });
+                scores.sort((a, b) => a.score - b.score); // Lower shots are better!
+                scores = scores.slice(0, 5);
+                localStorage.setItem("pool_leaderboard", JSON.stringify(scores));
+                updateLeaderboardUI();
+            }
+        }, 600);
+    }
+}
+
+// Modify the eightBall.isPocketed match logic inside evaluateTurnRules():
+if (eightBall.isPocketed) {
+    gameOver = true;
+    let remainingTargets = balls.filter(b => b.number !== 0 && b.number !== 8 && !b.isPocketed && 
+        (targetType === "solids" ? !b.isStriped : b.isStriped));
+
+    if (remainingTargets.length === 0 && !cueScratched) {
+        statusDisplay.innerHTML = `🏆 🎉 <strong>Player ${currentPlayer} Wins!</strong>`;
+        // If Player 1 wins legal game vs bot, check score criteria
+        if (currentPlayer === 1) {
+            checkAndSavePoolScore(totalShotsTaken);
+        }
+    } else {
+        statusDisplay.innerHTML = `❌ <strong>Game Over!</strong> Illegal 8-ball pocket. Player ${opponentPlayer} wins!`;
+    }
+    return;
+}
+
+// Run leaderboard UI loading sequence at bottom of script
+updateLeaderboardUI();

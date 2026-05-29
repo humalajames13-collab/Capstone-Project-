@@ -419,3 +419,47 @@ select option {
     color: #94a3b8 !important;
     margin-top: 10px !important;
 }
+/* --- LEADERBOARD STYLE SYSTEM --- */
+.leaderboard-box {
+    margin-top: 25px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(96, 165, 250, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: left;
+}
+
+.leaderboard-box h3 {
+    color: #60a5fa;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+    padding-bottom: 8px;
+}
+
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+}
+
+.leaderboard-item:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.leaderboard-item strong {
+    color: #f8fafc;
+}
+
+.rank-1 { color: #eab308 !important; font-weight: bold; } /* Gold */
+.rank-2 { color: #cbd5e1 !important; font-weight: bold; } /* Silver */
+.rank-3 { color: #cd7f32 !important; font-weight: bold; } /* Bronze */
