@@ -17,7 +17,6 @@ const keyboardRows = [
     ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BKSP"]
 ];
 
-// Fetch thousands of 5-letter words from a public English word repository
 async function loadDictionaryAndStart() {
     try {
         resultDisplay.innerHTML = "⏳ Loading dictionary...";
@@ -29,50 +28,56 @@ async function loadDictionaryAndStart() {
                       .map(word => word.trim().toUpperCase())
                       .filter(word => word.length === 5);
         
+        if(wordPool.length === 0) {
+            // Safe fallback if raw source structural arrays fail
+            wordPool = ["AMBER", "APPLE", "BRICK", "CRANE", "SMART"];
+        }
         initGame();
     } catch (error) {
-        console.error("Critical Error: Could not load the English dictionary repository.", error);
-        resultDisplay.innerHTML = "❌ Failed to load dictionary. Please check your connection and refresh.";
+        console.error("Critical Error: Could not load dictionary. Using localized backup.", error);
+        wordPool = ["AMBER", "APPLE", "BRICK", "CRANE", "SMART"];
+        initGame();
     }
 }
 
 function initGame() {
-    // Pick a completely randomized word from the English dictionary pool
-    secretWord = wordPool[Math.floor(Math.random() * wordPool.length)];
+    if (wordPool.length === 0) return;
     
+    secretWord = wordPool[Math.floor(Math.random() * wordPool.length)];
     guesses = [];
     currentGuess = "";
     gameOver = false;
-    resultDisplay.innerHTML = "";
-    hiddenInput.value = "";
+    if(resultDisplay) resultDisplay.innerHTML = "";
+    if(hiddenInput) hiddenInput.value = "";
     
-    // Draw Grid
-    gridContainer.innerHTML = "";
-    for (let i = 0; i < maxTries; i++) {
-        const row = document.createElement("div");
-        row.classList.add("wordle-row");
-        for (let j = 0; j < 5; j++) {
-            const tile = document.createElement("div");
-            tile.classList.add("wordle-tile");
-            tile.id = `tile-${i}-${j}`;
-            row.appendChild(tile);
+    if(gridContainer) {
+        gridContainer.innerHTML = "";
+        for (let i = 0; i < maxTries; i++) {
+            const row = document.createElement("div");
+            row.classList.add("wordle-row");
+            for (let j = 0; j < 5; j++) {
+                const tile = document.createElement("div");
+                tile.classList.add("wordle-tile");
+                tile.id = `tile-${i}-${j}`;
+                row.appendChild(tile);
+            }
+            gridContainer.appendChild(row);
         }
-        gridContainer.appendChild(row);
     }
 
-    // Draw Keyboard
     renderKeyboard();
     
     document.removeEventListener("click", focusInput);
     document.addEventListener("click", focusInput);
-    hiddenInput.focus();
+    focusInput();
 }
 
 function focusInput() {
-    if(!gameOver) hiddenInput.focus();
+    if(!gameOver && hiddenInput) hiddenInput.focus();
 }
 
 function renderKeyboard() {
+    if(!keyboardContainer) return;
     keyboardContainer.innerHTML = "";
     keyboardRows.forEach(row => {
         const rowDiv = document.createElement("div");
@@ -91,12 +96,14 @@ function renderKeyboard() {
     });
 }
 
-hiddenInput.addEventListener("input", (e) => {
-    if (gameOver) return;
-    let val = e.target.value.toUpperCase().replace(/[^A-Z]/g, "");
-    currentGuess = val;
-    updateCurrentRowVisuals();
-});
+if(hiddenInput) {
+    hiddenInput.addEventListener("input", (e) => {
+        if (gameOver) return;
+        let val = e.target.value.toUpperCase().replace(/[^A-Z]/g, "");
+        currentGuess = val;
+        updateCurrentRowVisuals();
+    });
+}
 
 window.addEventListener("keydown", (e) => {
     if (gameOver) return;
@@ -113,18 +120,18 @@ function handleKeyPress(key) {
     if (key === "BKSP") {
         if (currentGuess.length > 0) {
             currentGuess = currentGuess.slice(0, -1);
-            hiddenInput.value = currentGuess;
+            if(hiddenInput) hiddenInput.value = currentGuess;
         }
     } else if (key === "ENTER") {
         if (currentGuess.length === 5) {
             submitGuess();
         } else {
-            resultDisplay.innerHTML = "⚠️ Word must be 5 letters!";
+            if(resultDisplay) resultDisplay.innerHTML = "⚠️ Word must be 5 letters!";
         }
     } else if (/^[A-Z]$/.test(key)) {
         if (currentGuess.length < 5) {
             currentGuess += key;
-            hiddenInput.value = currentGuess;
+            if(hiddenInput) hiddenInput.value = currentGuess;
         }
     }
     updateCurrentRowVisuals();
@@ -136,10 +143,8 @@ function updateCurrentRowVisuals() {
 
     for (let j = 0; j < 5; j++) {
         const tile = document.getElementById(`tile-${activeRowIdx}-${j}`);
-        if (currentGuess[j]) {
-            tile.innerText = currentGuess[j];
-        } else {
-            tile.innerText = "";
+        if(tile) {
+            tile.innerText = currentGuess[j] ? currentGuess[j] : "";
         }
     }
 }
@@ -174,7 +179,7 @@ function submitGuess() {
 
     for (let i = 0; i < 5; i++) {
         const tile = document.getElementById(`tile-${rowIdx}-${i}`);
-        tile.classList.add(tileStatuses[i]);
+        if(tile) tile.classList.add(tileStatuses[i]);
         
         const keyBtn = document.getElementById(`key-${guess[i]}`);
         if (keyBtn) {
@@ -189,27 +194,24 @@ function submitGuess() {
     }
 
     currentGuess = "";
-    hiddenInput.value = "";
+    if(hiddenInput) hiddenInput.value = "";
 
     if (guess === secretWord) {
         gameOver = true;
         score += 15;
         document.getElementById("score").innerText = `Score: ${score}`;
-        resultDisplay.innerHTML = "🔥 Bandit Beaten! +15 Score";
+        if(resultDisplay) resultDisplay.innerHTML = "🔥 Bandit Beaten! +15 Score";
         
-        // Save leaderboard data on victory
         checkAndSaveScore(score);
         setTimeout(initGame, 2000);
 
     } else if (guesses.length === maxTries) {
         gameOver = true;
-        
-        // Save leaderboard data before points get dropped
-        checkAndSaveScore(score);
-
         score = Math.max(0, score - 5);
         document.getElementById("score").innerText = `Score: ${score}`;
-        resultDisplay.innerHTML = `❌ Busted! Word was: <strong>${secretWord}</strong>`;
+        if(resultDisplay) resultDisplay.innerHTML = `❌ Busted! Word was: <strong>${secretWord}</strong>`;
+        
+        checkAndSaveScore(score);
         setTimeout(initGame, 3000);
     }
 }
@@ -230,7 +232,7 @@ function updateLeaderboardUI() {
 }
 
 function checkAndSaveScore(finalScore) {
-    if (finalScore <= 0) return; // Don't track 0 score runs
+    if (finalScore <= 0) return;
     let scores = JSON.parse(localStorage.getItem("wordle_leaderboard")) || [];
     const minScore = scores.length < 5 ? 0 : scores[scores.length - 1].score;
     
@@ -249,6 +251,6 @@ function checkAndSaveScore(finalScore) {
     }
 }
 
-// Start dictionary tracking and load UI lists
+// Initial triggers
 loadDictionaryAndStart();
 updateLeaderboardUI();

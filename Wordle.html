@@ -11,28 +11,31 @@
 <div class="bg-blur blur1"></div>
 <div class="bg-blur blur2"></div>
 
-<div class="game-box wordle-box">
-  <h1>Wordle</h1>
-  <h2 id="score">Score: 0</h2>
-  <p class="game-desc">Guess the 5-letter word. 6 tries.</p>
+<div class="game-container">
+  <div class="game-box">
+    <h1>Wordle</h1>
+    <h2 id="score">Score: 0</h2>
+    <p class="game-desc">Guess the 5-letter word. 6 tries.</p>
 
-  <div class="wordle-grid" id="grid"></div>
+    <div class="wordle-grid" id="grid"></div>
 
-  <input type="text" id="hidden-input" maxlength="5" autocomplete="off">
+    <input type="text" id="hidden-input" maxlength="5" autocomplete="off">
 
-  <div class="keyboard" id="keyboard"></div>
+    <div class="keyboard" id="keyboard"></div>
 
-  <p id="result"></p>
+    <p id="result"></p>
 
-  <a href="home.html">
-    <button class="btn-secondary btn-margin">Back Home</button>
-  </a>
-</div>
-<div class="leaderboard-box">
+    <a href="home.html">
+      <button class="btn-secondary">Back Home</button>
+    </a>
+  </div>
+
+  <div class="leaderboard-box">
     <h3>🏆 Top Scores</h3>
     <ul id="leaderboard-list" class="leaderboard-list"></ul>
   </div>
+</div>
 
-<script src="Wordle.js"></script>
+<script src="wordle.js"></script>
 </body>
 </html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brain Break - Feedback</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="bg-blur blur1"></div>
+  <div class="bg-blur blur2"></div>
+
+  <div class="game-container">
+    <div class="game-box wordle-box">
+      <h1>FEEDBACK</h1>
+      <p class="game-desc">Help shape the future of Brain Break! What should we build next?</p>
+      
+      <form id="feedback-form">
+        
+        <div class="form-group">
+          <label for="student-name">PLAYER NAME / INITIALS:</label>
+          <input type="text" id="student-name" placeholder="E.G. AAA" maxlength="20" required>
+        </div>
+
+        <div class="form-group">
+          <label for="favorite-game">CURRENT FAVORITE GAME:</label>
+          <select id="favorite-game" required>
+            <option value="" disabled selected>SELECT A GAME</option>
+            <option value="matrix">Memory Matrix</option>
+            <option value="wordle">Wordle</option>
+            <option value="pool">8-Ball Showdown</option>
+            <option value="none">Haven't played yet</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>WHAT GENRES SHOULD WE ADD? (SELECT ALL):</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="genre" value="retro-arcade"> Retro Arcade (e.g., Pac-Man, Snake, Tetris)
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="genre" value="puzzle"> Logic & Math Puzzles (e.g., Sudoku, 2048)
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="genre" value="card-board"> Classic Card/Board Games (e.g., Chess, Solitaire)
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="genre" value="typing-speed"> Fast-Paced / Typing Games
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="game-ideas">SPECIFIC GAME IDEAS / SUGGESTIONS:</label>
+          <textarea id="game-ideas" placeholder="Type your dream arcade game here..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-margin">SUBMIT VOTE</button>
+      </form>
+
+      <div id="result"></div>
+
+      <br>
+      <a href="home.html" class="back-home">&lt; BACK TO MAIN MENU</a>
+    </div>
+  </div>
+
+  <script src="survey.js"></script>
+</body>
+</html>

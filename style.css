@@ -1,98 +1,97 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;700&display=swap');
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    /* Uses a classic arcade pixel font for headings, falls back to clean sans-serif */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
 body{
-    min-height:100vh;
+    min-height: 100vh;
     background: radial-gradient(circle at center, #1b053a 0%, #070114 100%);
     background-color: #070114;
-    color:#fff;
-    overflow-x:hidden;
+    color: #fff;
+    overflow-x: hidden;
     /* Retro scanline effect across the screen */
     background-image: linear-gradient(rgba(18, 10, 36, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
                       linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
     background-size: 100% 4px, 6px 100%;
 }
 
-/* HEADER */
+/* HEADER (Home Page) */
 header{
-    text-align:center;
-    padding:70px 20px 40px;
+    text-align: center;
+    padding: 70px 20px 40px;
 }
 
 header h1{
     font-family: 'Press Start 2P', cursive;
-    font-size:3rem;
-    color:#ff007f; /* Hot Pink */
-    margin-bottom:20px;
+    font-size: 3rem;
+    color: #ff007f; /* Hot Pink */
+    margin-bottom: 20px;
     text-transform: uppercase;
     text-shadow: 3px 3px 0px #00ffff, -3px -3px 0px #ffff00; /* Chromatic aberration effect */
 }
 
 header p{
     font-family: 'Press Start 2P', cursive;
-    color:#00ffff; /* Neon Cyan */
-    font-size:0.9rem;
+    color: #00ffff; /* Neon Cyan */
+    font-size: 0.9rem;
     letter-spacing: 1px;
 }
 
-/* CONTAINER / GRID SYSTEM */
+/* CONTAINER / GRID SYSTEM (Home Page Cards) */
 .container{
-    width:90%;
-    max-width:1200px;
-    margin:auto;
-    display:grid;
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap:30px;
-    padding-bottom:60px;
+    gap: 30px;
+    padding-bottom: 60px;
 }
 
-/* CARDS */
+/* CARDS (Home Page) */
 .card{
     background: #120626;
     border: 4px solid #00ffff;
     border-radius: 0px; /* Sharp retro corners */
-    padding:40px 30px;
-    text-align:center;
-    transition: 0.2s steps(4); /* Chappy retro transition */
+    padding: 40px 30px;
+    text-align: center;
+    transition: 0.2s steps(4); /* Choppy retro transition */
     box-shadow: 8px 8px 0px #ff007f;
 }
 
 .card:hover{
     transform: translate(-4px, -4px);
-    border-color:#ffff00; /* Turns neon yellow */
+    border-color: #ffff00; /* Turns neon yellow */
     box-shadow: 12px 12px 0px #00ffff;
 }
 
 .card h2{
     font-family: 'Press Start 2P', cursive;
-    color:#ffff00;
-    font-size:1.4rem;
-    margin-bottom:20px;
+    color: #ffff00;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
 }
 
 .card p{
-    color:#e0e0ff;
-    line-height:1.7;
-    margin-bottom:30px;
+    color: #e0e0ff;
+    line-height: 1.7;
+    margin-bottom: 30px;
 }
 
-/* BUTTONS */
+/* UNIVERSAL BUTTONS */
 button{
     font-family: 'Press Start 2P', cursive;
     background: #ff007f;
-    color:white;
+    color: white;
     border: 3px solid #fff;
-    padding:14px 28px;
-    border-radius:0px;
-    font-size:0.8rem;
-    cursor:pointer;
+    padding: 14px 28px;
+    border-radius: 0px;
+    font-size: 0.8rem;
+    cursor: pointer;
     transition: 0.1s ease;
     box-shadow: 5px 5px 0px #000;
     text-transform: uppercase;
@@ -114,99 +113,116 @@ button:hover{
     margin-top: 15px;
 }
 
-/* GAME BOX */
+/* CENTRALIZED GAME CONTAINER */
+/* This wrapper handles structural layouts and centers game content cleanly */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* BASE GAME BOX CONFIGURATION */
 .game-box{
-    width:90%;
-    max-width:550px;
-    margin:80px auto;
+    width: 90%;
+    max-width: 550px;
+    margin: 20px auto;
     background: #120626;
-    border: 6px double #ff007f; /* Retro double line border */
+    outline: 6px double #ff007f; /* Clean outline keeps bounding calculations precise */
     border-radius: 0px;
-    padding:50px 40px;
-    text-align:center;
+    padding: 50px 40px;
+    text-align: center;
     box-shadow: 12px 12px 0px #00ffff;
 }
 
+/* GAME SPECIFIC BOX OVERRIDES */
 .wordle-box {
     max-width: 500px; 
     padding: 30px 20px;
 }
 
+.pool-box {
+    max-width: 900px;
+    padding: 30px 20px;
+}
+
 .game-box h1{
     font-family: 'Press Start 2P', cursive;
-    font-size:2rem;
-    margin-bottom:25px;
-    color:#ffff00;
+    font-size: 2rem;
+    margin-bottom: 25px;
+    color: #ffff00;
     text-shadow: 4px 4px 0px #ff007f;
 }
 
 .game-box p{
-    color:#fff;
-    font-size:1.1rem;
-    margin:20px 0;
+    color: #fff;
+    font-size: 1.1rem;
+    margin: 20px 0;
 }
 
 .game-desc {
     margin: 5px 0 15px !important;
 }
 
-/* INPUT */
+/* GENERAL FORM INPUTS */
 input{
     font-family: 'Press Start 2P', cursive;
-    width:100%;
-    padding:15px;
-    margin:20px 0;
+    width: 100%;
+    padding: 15px;
+    margin: 20px 0;
     border: 3px solid #00ffff;
-    outline:none;
+    outline: none;
     border-radius: 0px;
     background: #070114;
-    color:#ffff00;
-    text-align:center;
-    font-size:0.9rem;
+    color: #ffff00;
+    text-align: center;
+    font-size: 0.9rem;
 }
 
 input::placeholder{
-    color:#554477;
+    color: #554477;
 }
 
-/* RESULT */
+/* HIDDEN INPUT FOR SYSTEM KEYBOARD CAPTURES */
+#hidden-input {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+}
+
+/* GAME MESSAGES & STATUS TEXT */
 #result{
     font-family: 'Press Start 2P', cursive;
-    margin-top:25px;
-    font-size:1rem;
+    margin-top: 25px;
+    font-size: 1rem;
     color: #ffff00;
     text-shadow: 2px 2px 0px #ff007f;
 }
 
-/* LINKS */
+/* GLOBAL ANCHOR CONTAINER TARGETS */
 a{
-    text-decoration:none;
+    text-decoration: none;
 }
 
-/* GLOW BACKGROUND (Turned into Arcade Laser Grids/Glows) */
+/* AMBIENT BACKGROUND EFFECTS */
 .bg-blur{
-    position:fixed;
-    width:400px;
-    height:400px;
-    border-radius:50%;
-    filter:blur(150px);
-    z-index:-1;
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    filter: blur(150px);
+    z-index: -1;
     opacity: 0.4;
 }
 
-.blur1{
-    background:#ff007f;
-    top:-150px;
-    left:-150px;
-}
+.blur1{ background: #ff007f; top: -150px; left: -150px; }
+.blur2{ background: #00ffff; bottom: -150px; right: -150px; }
 
-.blur2{
-    background:#00ffff;
-    bottom:-150px;
-    right:-150px;
-}
 
-/* --- MEMORY MATRIX ADDITIONS --- */
+/* --- MEMORY MATRIX GRAPHIC LAYOUT --- */
 .grid {
     display: grid;
     gap: 10px;
@@ -246,7 +262,8 @@ a{
     box-shadow: 0 0 15px #ff0055;
 }
 
-/* --- PIXEL BANDIT (WORDLE) ADDITIONS --- */
+
+/* --- WORDLE ARCHITECTURE LAYOUT --- */
 .wordle-grid {
     display: grid;
     grid-template-rows: repeat(6, 1fr);
@@ -330,31 +347,8 @@ a{
     color: #000;
 }
 
-#hidden-input {
-    position: absolute;
-    opacity: 0;
-    z-index: -1;
-}
 
-/* RESPONSIVE DESIGN */
-@media(max-width:768px){
-    header h1{
-        font-size:2rem;
-    }
-    .card{
-        padding:30px 20px;
-    }
-    .game-box{
-        padding:40px 25px;
-    }
-}
-
-/* --- 8-BALL SHOWDOWN (POOL) ADDITIONS --- */
-.pool-box {
-    max-width: 900px;
-    padding: 30px 20px;
-}
-
+/* --- 8-BALL SHOWDOWN (POOL) CONFIGURATION --- */
 .menu-row {
     display: flex;
     justify-content: center;
@@ -398,7 +392,7 @@ select option {
     position: relative;
     margin: 20px auto;
     background: #004422; /* Classic darker retro felt */
-    border: 12px solid #ff007f; /* Neon cabinet borders */
+    outline: 12px solid #ff007f; /* Neon cabinet borders */
     border-radius: 0px;
     box-shadow: 0 0 20px #ff007f, inset 0 0 20px rgba(0,0,0,0.8);
     max-width: 100%;
@@ -447,9 +441,12 @@ select option {
     margin-top: 15px !important;
 }
 
-/* --- LEADERBOARD STYLE SYSTEM --- */
+
+/* --- SCOREBOARD & LEADERBOARD MODULES --- */
 .leaderboard-box {
-    margin-top: 25px;
+    width: 100%;
+    max-width: 550px;
+    margin: 25px auto 0;
     background: #000;
     border: 3px solid #ffff00;
     border-radius: 0px;
@@ -490,31 +487,119 @@ select option {
     color: #ffff00;
 }
 
-/* Classic retro High-Score Podiums */
+/* High-Score Podium Positions Styles */
 .rank-1 { color: #ff007f !important; text-shadow: 1px 1px 0 #fff; } 
 .rank-2 { color: #00ffff !important; } 
 .rank-3 { color: #ffff00 !important; }
 
-#table-container {
-    /* Change this line in your CSS if the pool physics/aiming broke */
-    border: none; 
-    outline: 12px solid #ff007f; /* Outline sits outside the layout box */
+
+/* RESPONSIVE LAYOUT CONSTRAINTS */
+@media(max-width: 768px){
+    header h1{
+        font-size: 2rem;
+    }
+    .card{
+        padding: 30px 20px;
+    }
+    .game-box{
+        padding: 40px 25px;
+    }
 }
-.game-box { border: 6px double #ff007f; }
-/* UPDATE THIS IN style.css */
-.game-box {
-    width: 90%;
-    max-width: 550px;
-    margin: 80px auto;
-    background: #120626;
-    
-    /* Remove the standard border that offsets bounding box calculations */
-    border: none; 
-    /* Use an outline instead - maintains identical visual retro double border */
-    outline: 6px double #ff007f; 
-    
+
+@media(max-width: 480px){
+    .key {
+        min-width: 24px;
+        padding: 10px 4px;
+        font-size: 0.5rem;
+    }
+    .key.wide {
+        min-width: 42px;
+        font-size: 0.4rem;
+    }
+}
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;    /* Magic shorthand that centers both axes at once */
+}
+
+.game-container {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    max-width: 1200px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+/* --- FEEDBACK SURVEY COMPONENTS --- */
+.form-group {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.75rem;
+    color: #00ffff;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.checkbox-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #ff007f;
+}
+
+textarea {
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    min-height: 100px;
+    padding: 15px;
+    margin-top: 5px;
+    border: 3px solid #00ffff;
+    outline: none;
     border-radius: 0px;
-    padding: 50px 40px;
-    text-align: center;
-    box-shadow: 12px 12px 0px #00ffff;
+    background: #070114;
+    color: #fff;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+textarea:focus {
+    border-color: #ffff00;
+}
+
+.back-home {
+    display: inline-block;
+    margin-top: 25px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: #ffff00;
+    text-decoration: underline;
+}
+
+.back-home:hover {
+    color: #ff007f;
 }
